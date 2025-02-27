@@ -1,17 +1,9 @@
-import { Request, Response } from "express";
+import { Request } from "express";
 import slug from "slug";
-import { validationResult } from "express-validator";
 import User from "../models/User";
 import { comparePassword, hashPassword } from "../utils/auth";
 
 export const createAccount = async (req:Request, res)=>{
-    //manage errors
-    const errors = validationResult(req);
-    console.log(errors);
-    if(!errors.isEmpty()){
-        return res.status(400).json({errors: errors.array()});
-    }
-
     const newUser = new User(req.body);
     const { email, password } = req.body;
     const userExists = await User.findOne({ email });
@@ -34,13 +26,6 @@ export const createAccount = async (req:Request, res)=>{
 }
 
 export const sigIn= async (req:Request, res)=>{
-    //manage errors
-    const errors = validationResult(req);
-    console.log(errors);
-    if(!errors.isEmpty()){
-        return res.status(400).json({errors: errors.array()});
-    }
-
     //check if user exists
     const { email, password } = req.body;
     const user = await User.findOne({ email });
@@ -55,4 +40,5 @@ export const sigIn= async (req:Request, res)=>{
         const error= new Error('Invalid password');
         return res.status(401).json(error.message);
     }
+    return res.status(200).json({message: 'User logged in'});
 }
