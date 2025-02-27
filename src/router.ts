@@ -1,12 +1,19 @@
 import {Router} from 'express';
-import User from './models/User';
+import {body} from 'express-validator'
+import { createAccount, sigIn } from './handlers';
 const router = Router();
 
 /** Autentication and register  */
-router.post('/auth/signup', async (req, res) => {
-    const newUser = new User(req.body);
-    await newUser.save();
-    res.json({message: 'User created'});
-});
+router.post('/auth/signup',
+    body('handle').notEmpty().withMessage('Handle is required'),
+    body('name').notEmpty().withMessage('Name is required'),
+    body('email').isEmail().withMessage('Invalid email'),
+    body('password').isLength({min:6}).withMessage('Password must be at least 6 characters'),
+    createAccount);
+
+router.post('/auth/signin',
+    body('email').isEmail().withMessage('Invalid email'),
+    body('password').notEmpty().withMessage('Password is required'),
+    sigIn)
 
 export default router;
