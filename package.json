@@ -4,13 +4,20 @@
   "description": "",
   "license": "ISC",
   "author": "Patricio Gomez",
-  "type": "commonjs",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev":"node --watch index.js"
+    "dev": "nodemon src/index.ts",
+    "build":"tsc",
+    "start": "node dist/index.js"
   },
   "dependencies": {
     "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "nodemon": "^3.1.9",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
   }
 }

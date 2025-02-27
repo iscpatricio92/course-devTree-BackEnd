@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+        "outDir": "./dist", // output
+        "rootDir": "./src", // source code
+        "target": "ESNext", // new syntax
+        "lib": [
+            "ESNext",
+            "DOM"
+        ], //library of js
+        "moduleResolution": "nodeNext",
+        "module": "NodeNext",
+        "strict": false,
+        "sourceMap": true,
+        "esModuleInterop": true, //modules common and ES6 modules
+        "declaration": true, //export types TS extensions
+        //"skipLibCheck": true,
+        //"forceConsistentCasingInFileNames": true
+    },
+    "include": [
+        "src/**/*.ts"
+    ]
+}
