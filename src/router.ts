@@ -4,8 +4,8 @@ const router = Router();
 
 /** Autentication and register  */
 router.post('/auth/signup', async (req, res) => {
-    console.log(`Signup ${JSON.stringify(req.body)}`);
-    await User.create(req.body);
+    const newUser = new User(req.body);
+    await newUser.save();
     res.json({message: 'User created'});
 });
 
