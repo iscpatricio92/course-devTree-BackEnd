@@ -5,7 +5,7 @@ import { handleInputErrors } from './middleware/validation';
 const router = Router();
 
 /** Autentication and register  */
-router.post('/auth/signup',
+router.post('/auth/sign-up',
     body('handle').notEmpty().withMessage('Handle is required'),
     body('name').notEmpty().withMessage('Name is required'),
     body('email').isEmail().withMessage('Invalid email'),
@@ -13,7 +13,7 @@ router.post('/auth/signup',
     handleInputErrors,
     createAccount);
 
-router.post('/auth/signin',
+router.post('/auth/sign-in',
     body('email').isEmail().withMessage('Invalid email'),
     body('password').notEmpty().withMessage('Password is required'),
     handleInputErrors,

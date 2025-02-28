@@ -9,14 +9,14 @@ export const createAccount = async (req:Request, res)=>{
     const userExists = await User.findOne({ email });
     if (userExists) {
         const error= new Error('User already exists with this email');
-        return res.status(409).json(error.message);
+        return res.status(409).json({message:error.message});
     }
 
     const handle = slug(req.body.handle,'');
     const handleExists = await User.findOne({handle});
     if(handleExists){
         const error= new Error('Handle already exists');
-        return res.status(409).json(error.message)
+        return res.status(409).json({message:error.message})
     }
 
     newUser.password = await hashPassword(password);
