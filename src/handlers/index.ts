@@ -25,20 +25,20 @@ export const createAccount = async (req:Request, res)=>{
     return res.status(201).json({message: 'User created'});
 }
 
-export const sigIn= async (req:Request, res)=>{
+export const signIn= async (req:Request, res)=>{
     //check if user exists
     const { email, password } = req.body;
     const user = await User.findOne({ email });
     if (!user) {
         const error= new Error('User  does not exists with this email');
-        return res.status(401).json(error.message);
+        return res.status(401).json({error:error.message});
     }
 
     //check password
     const validPassword = await comparePassword(password, user.password);
     if(!validPassword){
         const error= new Error('Invalid password');
-        return res.status(401).json(error.message);
+        return res.status(401).json({error:error.message});
     }
     return res.status(200).json({message: 'User logged in'});
 }
