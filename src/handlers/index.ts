@@ -4,7 +4,7 @@ import User from "../models/User";
 import { comparePassword, hashPassword } from "../utils/auth";
 import { generateJWT } from "../utils/jwt";
 
-export const createAccount = async (req:Request, res)=>{
+export const signUp = async (req:Request, res)=>{
     const newUser = new User(req.body);
     const { email, password } = req.body;
     const userExists = await User.findOne({ email });
@@ -49,5 +49,28 @@ export const signIn= async (req:Request, res)=>{
 
 export const getProfile = async (req: Request, res) => {
     return res.status(200).json(req.user);
+}
+
+export const updateUser = async (req: Request, res) => {
+    try{
+        const { description } = req.body;
+
+        const handle = slug(req.body.handle,'');
+        const handleExists = await User.findOne({handle});
+        if(handleExists && handleExists.email !== req.user.email){
+            const error= new Error('Handle already exists');
+            return res.status(409).json({message:error.message})
+        }
+
+        //update user
+        req.user.description = description;
+        req.user.handle = handle;
+        await req.user.save();
+        return res.status(200).json({message: 'User updated'});
+    }
+    catch(e){
+        const error = new Error('Error updating user');
+        return res.status(500).json({error: error.message});
+    }
 }
 

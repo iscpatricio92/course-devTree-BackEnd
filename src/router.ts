@@ -1,8 +1,8 @@
 import {Router} from 'express';
 import {body} from 'express-validator'
-import { createAccount, signIn, getProfile } from './handlers';
+import { signUp, signIn, getProfile, updateUser } from './handlers';
 import { handleInputErrors } from './middleware/validation';
-import { autheticate } from './middleware/auth';
+import { authenticate } from './middleware/auth';
 const router = Router();
 
 /** Autentication and register  */
@@ -12,7 +12,7 @@ router.post('/auth/sign-up',
     body('email').isEmail().withMessage('Invalid email'),
     body('password').isLength({min:6}).withMessage('Password must be at least 6 characters'),
     handleInputErrors,
-    createAccount);
+    signUp);
 
 router.post('/auth/sign-in',
     body('email').isEmail().withMessage('Invalid email'),
@@ -20,9 +20,12 @@ router.post('/auth/sign-in',
     handleInputErrors,
     signIn)
 
-router.get('/profile',
-    autheticate,
-    getProfile
-)
+router.get('/profile',authenticate,getProfile)
+
+router.patch('/profile',
+    body('handle').notEmpty().withMessage('Handle is required'),
+    body('description').optional(),
+    authenticate,
+    updateUser)
 
 export default router;

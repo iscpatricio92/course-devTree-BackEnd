@@ -9,7 +9,7 @@ declare global{
         }
     }
 }
-export const autheticate = async (req: Request, res, next: NextFunction) => {
+export const authenticate = async (req: Request, res, next: NextFunction) => {
     const bearer = req.headers.authorization;
     if (!bearer) {
         const error = new Error('Bearer not found');
