@@ -2,6 +2,7 @@ import { Request } from "express";
 import slug from "slug";
 import User from "../models/User";
 import { comparePassword, hashPassword } from "../utils/auth";
+import { generateJWT } from "../utils/jwt";
 
 export const createAccount = async (req:Request, res)=>{
     const newUser = new User(req.body);
@@ -40,5 +41,8 @@ export const signIn= async (req:Request, res)=>{
         const error= new Error('Invalid password');
         return res.status(401).json({error:error.message});
     }
-    return res.status(200).json({message: 'User logged in'});
+
+    //generate token
+    const token = generateJWT({id:user._id});
+    return res.status(200).json({access_token: token});
 }
