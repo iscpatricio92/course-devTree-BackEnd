@@ -1,10 +1,10 @@
 import mongoose, { Schema } from "mongoose";
 
-interface IUser{
-    handle:string;
-    name:string;
-    email:string;
-    password:string;
+export interface IUser {
+    handle: string;
+    name: string;
+    email: string;
+    password: string;
 }
 
 const userSchema=new Schema({

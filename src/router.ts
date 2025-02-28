@@ -2,6 +2,7 @@ import {Router} from 'express';
 import {body} from 'express-validator'
 import { createAccount, signIn, getProfile } from './handlers';
 import { handleInputErrors } from './middleware/validation';
+import { autheticate } from './middleware/auth';
 const router = Router();
 
 /** Autentication and register  */
@@ -20,7 +21,7 @@ router.post('/auth/sign-in',
     signIn)
 
 router.get('/profile',
-    handleInputErrors,
+    autheticate,
     getProfile
 )
 

@@ -3,7 +3,6 @@ import slug from "slug";
 import User from "../models/User";
 import { comparePassword, hashPassword } from "../utils/auth";
 import { generateJWT } from "../utils/jwt";
-import jwt from 'jsonwebtoken';
 
 export const createAccount = async (req:Request, res)=>{
     const newUser = new User(req.body);
@@ -49,33 +48,6 @@ export const signIn= async (req:Request, res)=>{
 }
 
 export const getProfile = async (req: Request, res) => {
-    const bearer = req.headers.authorization;
-    if (!bearer) {
-        const error = new Error('Bearer not found');
-        return res.status(401).json({ message: error.message });
-    }
-
-    const [, token]= bearer.split(' ');
-    if(!token){
-        const error = new Error('Token not found');
-        return res.status(401).json({ message: error.message });
-    }
-
-    try{
-        const result= jwt.verify(token, process.env.JWT_SECRET);
-        if(typeof result === 'object' && result.id){
-            const user = await User.findById(result.id).select('-password');
-            if (!user) {
-                const error = new Error('User not found');
-                return res.status(404).json({ message: error.message });
-            }
-            return res.status(200).json(user);
-        }
-    }
-    catch(error){
-        console.log(error);
-        
-        return res.status(403).json({ message: error.message });
-    }
+    return res.status(200).json(req.user);
 }
 
