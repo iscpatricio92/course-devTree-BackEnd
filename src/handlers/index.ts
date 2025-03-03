@@ -1,8 +1,11 @@
 import { Request } from "express";
 import slug from "slug";
+import formidable from "formidable";
+import cloudinary from "../config/cloudinary";
 import User from "../models/User";
 import { comparePassword, hashPassword } from "../utils/auth";
 import { generateJWT } from "../utils/jwt";
+import { v4 as uuid } from 'uuid';
 
 export const signUp = async (req:Request, res)=>{
     const newUser = new User(req.body);
@@ -74,3 +77,38 @@ export const updateUser = async (req: Request, res) => {
     }
 }
 
+export const uploadImage= async (req:Request, res)=>{
+    try {
+        const form = formidable({ multiples: false });
+        form.parse(req, (error, fields, files) => {
+            if (error) {
+                throw new Error('Error parsing the form');
+            }
+
+            if (!files.file?.[0]?.filepath) {
+                throw new Error('Must supply a file');
+            }
+
+            cloudinary.uploader.upload(files.file[0].filepath, {
+                public_id: uuid(),
+                folder: 'profile',
+                resource_type: 'image',
+            }, async (error, result) => {
+                if (error) {
+                    console.warn(error);
+                    const err = new Error('Error uploading image');
+                    return res.status(500).json({ error: err.message });
+                }
+                if (result) {
+                    req.user.image = result.secure_url;
+                    await req.user.save();
+                    return res.status(200).json({ image: result.secure_url });
+                }
+            });
+        });
+    } catch (e) {
+        const error = new Error('Error uploading image');
+        console.warn(e);
+        return res.status(500).json({ error: error.message });
+    }
+}

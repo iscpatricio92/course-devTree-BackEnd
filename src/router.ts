@@ -1,6 +1,6 @@
 import {Router} from 'express';
 import {body} from 'express-validator'
-import { signUp, signIn, getProfile, updateUser } from './handlers';
+import { signUp, signIn, getProfile, updateUser, uploadImage } from './handlers';
 import { handleInputErrors } from './middleware/validation';
 import { authenticate } from './middleware/auth';
 const router = Router();
@@ -27,5 +27,7 @@ router.patch('/profile',
     body('description').optional(),
     authenticate,
     updateUser)
+
+router.post('/user/image',authenticate, uploadImage)
 
 export default router;
