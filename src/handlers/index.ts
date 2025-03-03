@@ -56,7 +56,7 @@ export const getProfile = async (req: Request, res) => {
 
 export const updateUser = async (req: Request, res) => {
     try{
-        const { description } = req.body;
+        const { description, links } = req.body;
 
         const handle = slug(req.body.handle,'');
         const handleExists = await User.findOne({handle});
@@ -68,6 +68,7 @@ export const updateUser = async (req: Request, res) => {
         //update user
         req.user.description = description;
         req.user.handle = handle;
+        req.user.links = links;
         await req.user.save();
         return res.status(200).json({message: 'User updated'});
     }
@@ -102,7 +103,7 @@ export const uploadImage= async (req:Request, res)=>{
                 if (result) {
                     req.user.image = result.secure_url;
                     await req.user.save();
-                    return res.status(200).json({ image: result.secure_url });
+                    return res.json({ image: result.secure_url });
                 }
             });
         });
