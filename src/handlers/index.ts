@@ -7,47 +7,47 @@ import { comparePassword, hashPassword } from "../utils/auth";
 import { generateJWT } from "../utils/jwt";
 import { v4 as uuid } from 'uuid';
 
-export const signUp = async (req:Request, res)=>{
+export const signUp = async (req: Request, res) => {
     const newUser = new User(req.body);
     const { email, password } = req.body;
     const userExists = await User.findOne({ email });
     if (userExists) {
-        const error= new Error('User already exists with this email');
-        return res.status(409).json({message:error.message});
+        const error = new Error('User already exists with this email');
+        return res.status(409).json({ message: error.message });
     }
 
-    const handle = slug(req.body.handle,'');
-    const handleExists = await User.findOne({handle});
-    if(handleExists){
-        const error= new Error('Handle already exists');
-        return res.status(409).json({message:error.message})
+    const handle = slug(req.body.handle, '');
+    const handleExists = await User.findOne({ handle });
+    if (handleExists) {
+        const error = new Error('Handle already exists');
+        return res.status(409).json({ message: error.message })
     }
 
     newUser.password = await hashPassword(password);
     newUser.handle = handle;
     await newUser.save();
-    return res.status(201).json({message: 'User created'});
+    return res.status(201).json({ message: 'User created' });
 }
 
-export const signIn= async (req:Request, res)=>{
+export const signIn = async (req: Request, res) => {
     //check if user exists
     const { email, password } = req.body;
     const user = await User.findOne({ email });
     if (!user) {
-        const error= new Error('User  does not exists with this email');
-        return res.status(401).json({error:error.message});
+        const error = new Error('User  does not exists with this email');
+        return res.status(401).json({ error: error.message });
     }
 
     //check password
     const validPassword = await comparePassword(password, user.password);
-    if(!validPassword){
-        const error= new Error('Invalid password');
-        return res.status(401).json({error:error.message});
+    if (!validPassword) {
+        const error = new Error('Invalid password');
+        return res.status(401).json({ error: error.message });
     }
 
     //generate token
-    const token = generateJWT({id:user._id});
-    return res.status(200).json({access_token: token});
+    const token = generateJWT({ id: user._id });
+    return res.status(200).json({ access_token: token });
 }
 
 export const getProfile = async (req: Request, res) => {
@@ -55,14 +55,14 @@ export const getProfile = async (req: Request, res) => {
 }
 
 export const updateUser = async (req: Request, res) => {
-    try{
+    try {
         const { description, links } = req.body;
 
-        const handle = slug(req.body.handle,'');
-        const handleExists = await User.findOne({handle});
-        if(handleExists && handleExists.email !== req.user.email){
-            const error= new Error('Handle already exists');
-            return res.status(409).json({message:error.message})
+        const handle = slug(req.body.handle, '');
+        const handleExists = await User.findOne({ handle });
+        if (handleExists && handleExists.email !== req.user.email) {
+            const error = new Error('Handle already exists');
+            return res.status(409).json({ message: error.message })
         }
 
         //update user
@@ -70,15 +70,15 @@ export const updateUser = async (req: Request, res) => {
         req.user.handle = handle;
         req.user.links = links;
         await req.user.save();
-        return res.status(200).json({message: 'User updated'});
+        return res.status(200).json({ message: 'User updated' });
     }
-    catch(e){
+    catch (e) {
         const error = new Error('Error updating user');
-        return res.status(500).json({error: error.message});
+        return res.status(500).json({ error: error.message });
     }
 }
 
-export const uploadImage= async (req:Request, res)=>{
+export const uploadImage = async (req: Request, res) => {
     try {
         const form = formidable({ multiples: false });
         form.parse(req, (error, fields, files) => {
@@ -107,6 +107,21 @@ export const uploadImage= async (req:Request, res)=>{
                 }
             });
         });
+    } catch (e) {
+        const error = new Error('Error uploading image');
+        console.warn(e);
+        return res.status(500).json({ error: error.message });
+    }
+}
+export const getUserByHandle = async (req: Request, res) => {
+    try {
+        const handle=req.params.handle;
+        const userExist= await User.findOne({handle}).select('-password -_id -__v');
+        if(!userExist){
+            const error = new Error('User does not exist');
+            return res.status(404).json({error:error.message})
+        }
+        return res.status(200).json(userExist)
     } catch (e) {
         const error = new Error('Error uploading image');
         console.warn(e);
