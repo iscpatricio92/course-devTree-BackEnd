@@ -62,7 +62,7 @@ export const updateUser = async (req: Request, res) => {
         const handleExists = await User.findOne({ handle });
         if (handleExists && handleExists.email !== req.user.email) {
             const error = new Error('Handle already exists');
-            return res.status(409).json({ message: error.message })
+            return res.status(409).json({ error: error.message })
         }
 
         //update user
