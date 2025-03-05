@@ -128,3 +128,19 @@ export const getUserByHandle = async (req: Request, res) => {
         return res.status(500).json({ error: error.message });
     }
 }
+
+export const searchByHandle = async (req: Request, res) => {
+    try {
+        const handle=req.body.handle;
+        const userExist= await User.findOne({handle}).select('-password -_id -__v');
+        if(userExist){
+            const error = new Error(`User ${handle} already exists`);
+            return res.status(409).json({error:error.message})
+        }
+        return res.status(200).json({message:`User ${handle} is available`})
+    } catch (e) {
+        const error = new Error('Error uploading image');
+        console.warn(e);
+        return res.status(500).json({ error: error.message });
+    }
+}

@@ -1,6 +1,6 @@
 import {Router} from 'express';
 import {body} from 'express-validator'
-import { signUp, signIn, getProfile, updateUser, uploadImage, getUserByHandle } from './handlers';
+import { signUp, signIn, getProfile, updateUser, uploadImage, getUserByHandle, searchByHandle } from './handlers';
 import { handleInputErrors } from './middleware/validation';
 import { authenticate } from './middleware/auth';
 const router = Router();
@@ -31,5 +31,9 @@ router.patch('/profile',
 router.post('/user/image',authenticate, uploadImage)
 
 router.get('/:handle', getUserByHandle)
+
+router.post('/search',
+    body('handle').notEmpty().withMessage('Handle is required'),
+    searchByHandle)
 
 export default router;
